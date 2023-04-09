@@ -16,23 +16,18 @@ else()
 endif()
 
 # GLFW (Platform Backend)
-if (EXISTS ${DEAR_IMGUI_DIR}/glfw)
-    message(STATUS "GLFW directory found at DEAR_IMGUI_DIR: ${DEAR_IMGUI_DIR}")
-    set(GLFW_DIR ${DEAR_IMGUI_DIR}/glfw) # Set this to point to an up-to-date GLFW repo
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo)
+    message(STATUS "GLFW directory found at: ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo")
+    set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo) # Set this to point to an up-to-date GLFW repo
 else()
-    message(FATAL_ERROR "GLFW directory not found at: ${DEAR_IMGUI_DIR}")
+    message(FATAL_ERROR "GLFW directory not found at: ${CMAKE_CURRENT_SOURCE_DIR}/..")
 endif()
 
-if (EXISTS ${GLFW_DIR}/lib-vc2019)
-    message(STATUS "GLFW lib-vc2019 directory found at GLFW directory: ${GLFW_DIR}")
-    find_library(GLFW_LIBRARY glfw3 PATHS ${GLFW_DIR}/lib-vc2019) 
-    if(GLFW_LIBRARY)
-        message("GLFW library found: ${GLFW_LIBRARY}")
-    else()
-        message(FATAL_ERROR "GLFW library not found at: ${GLFW_DIR}/lib-vc2019")
-    endif()
+find_library(GLFW_LIBRARY glfw3 PATHS ${GLFW_DIR}) 
+if(GLFW_LIBRARY)
+    message(STATUS "GLFW library found: ${GLFW_LIBRARY}")
 else()
-    message(FATAL_ERROR "GLFW library directory not found at: ${GLFW_DIR}")
+    message(FATAL_ERROR "GLFW library not found at: ${GLFW_DIR}")
 endif()
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
@@ -53,7 +48,7 @@ find_package(Vulkan REQUIRED)
 set(LIBRARIES "${GLFW_LIBRARY};Vulkan::Vulkan")
 
 # Use vulkan headers from glfw:
-# include_directories(${GLFW_DIR}/deps)
+include_directories(${GLFW_DIR}/deps)
 
 file(GLOB sources *.cpp)
 
