@@ -8,26 +8,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
 
 # Dear ImGui (Common Backend)
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/DearImGui)
-    message(STATUS "DearImGui directory found at CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
     set(DEAR_IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/DearImGui)
-    include_directories(${DEAR_IMGUI_DIR} ${DEAR_IMGUI_DIR}/backends ..)
+    message(STATUS "DearImGui directory found at: ${DEAR_IMGUI_DIR}")
+    include_directories(${DEAR_IMGUI_DIR})
+    include_directories(${DEAR_IMGUI_DIR}/backends)
 else()
     message(FATAL_ERROR "DearImGui directory not found at: ${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
 # GLFW (Platform Backend)
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo)
-    message(STATUS "GLFW directory found at: ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo")
-    set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../glfw_repo) # Set this to point to an up-to-date GLFW repo
+if (EXISTS ../glfw_repo)
+    set(GLFW_DIR ../glfw_repo) # Set this to point to an up-to-date GLFW repo
+    message(STATUS "GLFW directory found at: ${GLFW_DIR}")
 else()
-    message(FATAL_ERROR "GLFW directory not found at: ${CMAKE_CURRENT_SOURCE_DIR}/..")
-endif()
-
-find_library(GLFW_LIBRARY glfw3 PATHS ${GLFW_DIR}) 
-if(GLFW_LIBRARY)
-    message(STATUS "GLFW library found: ${GLFW_LIBRARY}")
-else()
-    message(FATAL_ERROR "GLFW library not found at: ${GLFW_DIR}")
+    message(FATAL_ERROR "GLFW directory not found at: ../glfw_repo")
 endif()
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
@@ -36,27 +30,25 @@ option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
-if (EXISTS ${GLFW_DIR}/include)
-    message(STATUS "GLFW include directory found at GLFW directory: ${GLFW_DIR}")
-    include_directories("${GLFW_DIR}/include")
-else()
-    message(FATAL_ERROR "GLFW include directory not found at: ${GLFW_DIR}")
-endif()
+add_subdirectory(${GLFW_DIR} binary_dir EXCLUDE_FROM_ALL)
+include_directories(${GLFW_DIR}/include)
 
 # Libraries (Renderer Backend)
 find_package(Vulkan REQUIRED)
-set(LIBRARIES "${GLFW_LIBRARY};Vulkan::Vulkan")
 
 # Use vulkan headers from glfw:
 include_directories(${GLFW_DIR}/deps)
 
-file(GLOB sources *.cpp)
+file(GLOB sources *.cpp *.h)
 
-add_executable(LogParser ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${DEAR_IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${DEAR_IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${DEAR_IMGUI_DIR}/imgui.cpp ${DEAR_IMGUI_DIR}/imgui_draw.cpp ${DEAR_IMGUI_DIR}/imgui_demo.cpp ${DEAR_IMGUI_DIR}/imgui_tables.cpp ${DEAR_IMGUI_DIR}/imgui_widgets.cpp)
+add_executable(LogParser
+    ${sources}
+)
 
-target_link_libraries(LogParser ${LIBRARIES})
-target_link_libraries(LogParser ${GLFW})
-# Maybe switch LogParser with ${CMAKE_PROJECT_NAME}??
+target_link_libraries(LogParser "glfw")
+target_link_libraries(LogParser "Vulkan::Vulkan")
+
+target_include_directories(LogParser PUBLIC ${DEAR_IMGUI_DIR})
 
 target_compile_definitions(LogParser PUBLIC -DImTextureID=ImU64)
 

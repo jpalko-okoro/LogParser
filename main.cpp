@@ -1,10 +1,19 @@
+// Standard Library Includes
 #include <iostream>
+#include <stdio.h>  // printf, fprintf
+#include <stdlib.h> // abort
 
+// DearImGui Includes
 #include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
 
-#include <iostream>
+// GLFW Includes
+#include <GLFW/glfw3.h>
 
-int main(int, char**) {
-    ImGui::Begin("Window");
-    ImGui::End();
+// Vulcan Includes
+#include <vulkan/vulkan.h>
+
+int main(int, char **) {
+  std::cout << "Test Start";
 }
