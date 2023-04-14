@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(LogParser C CXX)
-message("CMAKE_PROJECT_NAME = ${CMAKE_PROJECT_NAME}")
+project(LogParser)
+message(STATUS "CMAKE_PROJECT_NAME = ${CMAKE_PROJECT_NAME}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVK_PROTOTYPES")
