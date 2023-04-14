@@ -15,5 +15,7 @@
 #include <vulkan/vulkan.h>
 
 int main(int, char **) {
-  std::cout << "Test Start";
+  std::string testStr = "Test Start";
+  std::cout << testStr;
+  ImGui::Text("Hello, world %d", 123);
 }

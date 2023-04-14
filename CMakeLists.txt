@@ -2,7 +2,7 @@
 # then make sure to launch VSCode using Terminal and running vcvars64 first
 
 cmake_minimum_required(VERSION 3.0.0)
-project(LogParser VERSION 0.1.0)
+project(LogParser VERSION 0.1.0 LANGUAGES C CXX)
 message(STATUS "CMAKE_PROJECT_NAME = ${CMAKE_PROJECT_NAME}")
 
 # GLFW (Platform Backend)
