@@ -5,12 +5,11 @@ cmake_minimum_required(VERSION 3.0.0)
 project(LogParser VERSION 0.1.0 LANGUAGES C CXX)
 message(STATUS "CMAKE_PROJECT_NAME = ${CMAKE_PROJECT_NAME}")
 
-# Components from GLFW + Vulkan Example
-set(CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVK_PROTOTYPES")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
 
-# GLFW (Platform Backend) --> Looks good
+# GLFW (Platform Backend)
     set(GLFW_DIR "${CMAKE_CURRENT_LIST_DIR}/glfw")
 
     # Configure messaging for debugging
@@ -51,45 +50,39 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
     endif()
 
     # Specifying all the source files to include
-    # file(GLOB IMGUI_SOURCES 
-    #     # General ImGui files
-    #     ${IMGUI_DIR}/imgui.h
-    #     ${IMGUI_DIR}/imgui.cpp
-    #     ${IMGUI_DIR}/imconfig.h
-    #     ${IMGUI_DIR}/imgui_demo.cpp
-    #     ${IMGUI_DIR}/imgui_draw.cpp
-    #     ${IMGUI_DIR}/imgui_internal.h
-    #     ${IMGUI_DIR}/imstb_rectpack.h
-    #     ${IMGUI_DIR}/imstb_textedit.h
-    #     ${IMGUI_DIR}/imstb_truetype.h
-    #     ${IMGUI_DIR}/imgui_tables.cpp
-    #     ${IMGUI_DIR}/imgui_widgets.cpp
+    file(GLOB IMGUI_SOURCES 
+        # General ImGui files
+        ${IMGUI_DIR}/imgui.h
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imconfig.h
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_internal.h
+        ${IMGUI_DIR}/imstb_rectpack.h
+        ${IMGUI_DIR}/imstb_textedit.h
+        ${IMGUI_DIR}/imstb_truetype.h
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
 
-    #     # Renderer specific ImGui files (made for GLFW and Vulkan)
-    #     ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.h
-    #     ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp
-    #     ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.h
-    #     ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.cpp
-    # )
+        # Renderer specific ImGui files (GLFW and Vulkan)
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.h
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.h
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.cpp
+    )
 
     # Including Dear ImGui library
-    # add_library("imgui" STATIC ${IMGUI_SOURCES})
-    # target_include_directories("imgui" PUBLIC ${IMGUI_DIR})
-    # target_include_directories("imgui" PUBLIC ${IMGUI_BACKENDS_DIR})
-
-    # Testing to see if this works --> From the GLFW-Vulkan example
-    include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR} ..)
+    add_library("imgui" STATIC ${IMGUI_SOURCES})
+    target_include_directories("imgui" PUBLIC ${IMGUI_DIR})
+    target_include_directories("imgui" PUBLIC ${IMGUI_BACKENDS_DIR})
 
 # Vulkan (Renderer Backend)
     find_package(Vulkan REQUIRED)
 
-    # Setting libraries --> From the GLFW-Vulkan example
-    set(LIBRARIES "glfw;Vulkan::Vulkan")
-
 # Non-executable library linking
-    # Linking DearImGui and other libraries --> Not positive this worked for GLFW and Vulkan
-    # target_link_libraries("imgui" PRIVATE "glfw")
-    # target_link_libraries("imgui" PRIVATE "Vulkan::Vulkan")
+    # Linking DearImGui and other libraries
+    target_link_libraries("imgui" PRIVATE "glfw")
+    target_link_libraries("imgui" PRIVATE "Vulkan::Vulkan")
 
     # Use Vulkan headers from GLFW:
     include_directories(${GLFW_DIR}/deps)
@@ -119,29 +112,23 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
     )
 
     # Adding all the project sources to the project's executable
-    # add_executable(${CMAKE_PROJECT_NAME}
-    #     ${PROJECT_SOURCES}
-    # )
-
-    # Seeing if this works --> From GLFW-Vulkan Example
-    add_executable(${CMAKE_PROJECT_NAME} ${PROJECT_SOURCES} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
-
+    add_executable(${CMAKE_PROJECT_NAME}
+        ${PROJECT_SOURCES}
+    )
 
 # Executable library linking and directory includes 
-    # target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "glfw")
-    # target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "Vulkan::Vulkan")
-    # target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "imgui")
+# Can maybe be cleaned up a little
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "glfw")
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "Vulkan::Vulkan")
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC "imgui")
 
-    # target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "glfw")
-    # target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "Vulkan::Vulkan")
-    # target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "imgui")
-
-    # Seeing if this works --> From GLFW-Vulkan Example
-    target_link_libraries(${CMAKE_PROJECT_NAME} ${LIBRARIES})
+    target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "glfw")
+    target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "Vulkan::Vulkan")
+    target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "imgui")
 
 # Dear ImGui specific pre-processor macro definition included in GLFW-Vulkan example
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC -DImTextureID=ImU64)
 
 # Setting variables for future packaging of the project using CPack
-# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
