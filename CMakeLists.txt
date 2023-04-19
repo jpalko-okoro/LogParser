@@ -126,7 +126,8 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
     target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "Vulkan::Vulkan")
     target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "imgui")
 
-# Dear ImGui specific pre-processor macro definition included in GLFW-Vulkan example
+# Important: on 32-bit systems, user texture binding is only supported if your imconfig file has '#define ImTextureID ImU64'.
+# This is because we need ImTextureID to carry a 64-bit value and by default ImTextureID is defined as void*. Hence the following:
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC -DImTextureID=ImU64)
 
 # Setting variables for future packaging of the project using CPack
